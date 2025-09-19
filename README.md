@@ -2,7 +2,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 # Neuroplan 🧠📅
 EEG-based personalized learning planner built with Next.js and FullCalendar.  
-利用脑电波（EEG）数据和智能日程工具，帮助用户找到最佳学习时间并优化学习计划。  
 ---
 ## 🚀 Getting Started
 
