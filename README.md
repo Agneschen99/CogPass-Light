@@ -65,6 +65,7 @@ We follow Conventional Commits:
    
 **Example:**
 feat: add EEG mode wire-up
+
 fix: resolve calendar rendering bug
 
 
