@@ -6,17 +6,17 @@ EEG-based personalized learning planner built with Next.js and FullCalendar.
 ---
 ## 🚀 Getting Started
 
-1. Clone the repository
+**1. Clone the repository**
 ```bash
 git clone https://github.com/Agneschen99/Neuroplan.git
 cd Neuroplan
 
-2. Install dependencies
+**2. Install dependencies**
 ```bash
 npm install
 
-3. Setup environment variables
-Copy .env.example to .env.local and update with your own values:
+**3. Set up environment variables**
+ Copy .env.example to .env.local and update with your own values:
 ```bash
 cp .env.example .env.local
 .env.local example:
@@ -24,7 +24,7 @@ MODEL_BACKEND_URL=http://localhost:8000
 MODEL_TOKEN=your_token_here
 NODE_ENV=development
 
-4. Run the development server
+**4. Run the development server**
 ```bash
 npm run dev
 # or
@@ -35,12 +35,11 @@ pnpm dev
 bun dev
 ```
 
-Open http://localhost:3000
+**Open** http://localhost:3000
  in your browser to see the app.
 If port 3000 is busy, the app will run on another port (e.g., 3001).
 
-**Project Structure
-
+**Project Structure**
 ├── public/  # Static files
 
 ├── src/# Frontend code
@@ -53,7 +52,7 @@ If port 3000 is busy, the app will run on another port (e.g., 3001).
 
 └── README.md # Project documentation
 
-**Commit Convention
+**Commit Convention**
 We follow Conventional Commits:
 1. feat: add a new feature
 2. fix: bug fix
@@ -62,7 +61,7 @@ We follow Conventional Commits:
 5. refactor: code change that neither fixes a bug nor adds a feature
 6. test: add/modify tests
 7. chore: build process or auxiliary tools changes
-Example:
+**Example:**
 feat: add EEG mode wire-up
 fix: resolve calendar rendering bug
 
