@@ -40,12 +40,18 @@ Open http://localhost:3000
 If port 3000 is busy, the app will run on another port (e.g., 3001).
 
 **Project Structure
-├── public/             # Static files
-├── src/                # Frontend code
-├── .env.example        # Example environment file
-├── .gitignore          # Ignored files
-├── package.json        # Dependencies
-└── README.md           # Project documentation
+
+├── public/  # Static files
+
+├── src/# Frontend code
+
+├── .env.example # Example environment file
+
+├── .gitignore # Ignored files
+
+├── package.json # Dependencies
+
+└── README.md # Project documentation
 
 **Commit Convention
 We follow Conventional Commits:
