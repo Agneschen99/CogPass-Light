@@ -64,8 +64,8 @@ We follow Conventional Commits:
 7. chore: build process or auxiliary tools changes
    
 **Example:**
-feat: add EEG mode wire-up
 
+feat: add EEG mode wire-up
 fix: resolve calendar rendering bug
 
 
