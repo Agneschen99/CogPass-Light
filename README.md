@@ -62,6 +62,7 @@ We follow Conventional Commits:
 5. refactor: code change that neither fixes a bug nor adds a feature
 6. test: add/modify tests
 7. chore: build process or auxiliary tools changes
+   
 **Example:**
 feat: add EEG mode wire-up
 fix: resolve calendar rendering bug
