@@ -1,5 +1,8 @@
 // src/lib/planner.ts
-import dayjs from "dayjs";
+// --- at top of src/lib/planner.ts ---
+import dayjs, { Dayjs } from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore);
 import { nanoid } from "nanoid";
 import type { Task, Slot } from "@/types";
 
@@ -51,29 +54,28 @@ export function generatePlan(tasks: Task[], dailyMaxBlocks = 5): { todayTop3: Sl
       if (dayUsage[key] >= dailyMaxBlocks) continue;
 
       for (const win of DAILY_WINDOWS) {
-        let start = day.hour(win.startHour).minute(0);
+       let cursor = day.hour(win.startHour).minute(0);
         const end = day.hour(win.endHour).minute(0);
-        while (start.add(POMO_MIN, "minute").isSameOrBefore(end)) {
-          if (dayUsage[key] >= dailyMaxBlocks) break;
+       while (cursor.isSameOrBefore(end)) {
+  if (dayUsage[key] >= dailyMaxBlocks) break;
 
-          weekSlots.push({
-            id: nanoid(),
-            title: t.title,
-            subject: t.subject,
-            minutes: POMO_MIN,
-            start: start.toDate(),
-            done: false,
-          });
+  weekSlots.push({
+    id: nanoid(),
+    title: t.title,
+    subject: t.subject,
+    minutes: POMO_MIN,
+    start: cursor.toISOString(),                      
+    end: cursor.add(POMO_MIN, "minute").toISOString(),
+    done: false,
+  });
 
-          dayUsage[key]++;
-          scheduled++;
-          if (scheduled === needs) break outer;
+  dayUsage[key]++;
+  scheduled++;
+  if (scheduled === needs) break outer;  
 
-          start = start.add(POMO_MIN, "minute");
-        }
-      }
-    }
-  }
+  cursor = cursor.add(POMO_MIN, "minute");
+}
+
 
   // today’s top 3 (earliest 3 blocks today)
   const todayKey = dayjs().format("YYYY-MM-DD");

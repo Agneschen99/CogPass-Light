@@ -1,92 +1,92 @@
 // src/state/store.ts
 import { create } from "zustand";
 import { nanoid } from "nanoid";
-import type { Task, Slot, CheckIn } from "@/types";
-import { number } from "zod";
 
-// If your Slot type doesn't have "done", you can keep it optional.
-// Example Slot extension used only in UI toggles:
-export type UISlot = Slot & { done?: boolean };
+// ====== Types ======
+export type Task = {
+  id: string;
+  title: string;
+  subject?: string;
+  difficulty?: number;
+  due?: string;         // ISO string
+  minutes?: number;
+};
 
-type Plan = {
-  todayTop3: UISlot[];
-  weekSlots: UISlot[];
+export type WeekSlot = {
+  id?: string | number;
+  title?: string;
+  subject?: string;
+  start: string;        // ISO string
+  end: string;          // ISO string
+};
+
+export type Plan = {
+  todayTop3?: Task[];
+  weekSlots?: WeekSlot[];
+};
+
+export type CheckIn = {
+  at: string;           // ISO string
+  note?: string;
 };
 
 type Store = {
-  // Data
+  // ----- state -----
   tasks: Task[];
   pomodoros: number;
-  todayTop3: UISlot[];
-  weekSlots: UISlot[];
+  todayTop3: Task[];
+  weekSlots: WeekSlot[];
   checkIns: CheckIn[];
 
-  // Task ops
+  // ----- actions -----
   addTask: (t: Omit<Task, "id">) => void;
   removeTask: (id: string) => void;
   clearTasks: () => void;
 
-  // Plan ops
   setPlan: (plan: Plan) => void;
-  resetPlan: () => void;
-  toggleSlotDone: (slotId: string, force?: boolean) => void;
-
-  // Check-ins
   addCheckIn: (c: CheckIn) => void;
 };
 
+// ====== store ======
 export const useStore = create<Store>((set) => ({
-  // ---------- SAFE DEFAULTS ----------
-  tasks: [],                // never undefined
+  // ---- SAFE DEFAULTS ----
+  tasks: [],
   pomodoros: 0,
-  todayTop3: [],            // never undefined
-  weekSlots: [],            // never undefined
-  checkIns: [],             // never undefined
+  todayTop3: [],
+  weekSlots: [],
+  checkIns: [],
 
-  // ---------- TASKS ----------
-addTask: (t) =>
-  set((s) => ({
-    tasks: [
-      ...s.tasks,
-      {
-        id: nanoid(),
-        title: t.title,
-        subject: t.subject,
-        difficulty: t.difficulty,
-        due: t.due,
-        minutes: t.minutes,
-      },
-    ],
-  })), 
-  
-  removeTask: (id: string) =>
-    set((s) => ({ tasks: s.tasks.filter((task) => task.id !== id) })),
+  // ---- TASKS ----
+  addTask: (t) =>
+    set((s) => ({
+      tasks: [
+        ...(s.tasks ?? []),
+        {
+          id: nanoid(),
+          title: t.title,
+          subject: t.subject,
+          difficulty: t.difficulty,
+          due: t.due,
+          minutes: t.minutes,
+        },
+      ],
+    })),
 
-  clearTasks: () => set({ tasks: [] }),
+  removeTask: (id) =>
+    set((s) => ({ tasks: (s.tasks ?? []).filter((task) => task.id !== id) })),
 
-  // ---------- PLAN ----------
+  clearTasks: () => set(() => ({ tasks: [] })),
+
+  // ---- PLAN ----
   setPlan: (plan) =>
     set(() => ({
       todayTop3: plan.todayTop3 ?? [],
       weekSlots: plan.weekSlots ?? [],
     })),
 
-  resetPlan: () =>
-    set(() => ({
-      todayTop3: [],
-      weekSlots: [],
-    })),
-
-  toggleSlotDone: (slotId, force) =>
+  // ---- CHECKINS ----
+  addCheckIn: (c) =>
     set((s) => ({
-      weekSlots: s.weekSlots.map((sl) =>
-        sl.id === slotId ? { ...sl, done: force ?? !sl.done } : sl
-      ),
-      todayTop3: s.todayTop3.map((sl) =>
-        sl.id === slotId ? { ...sl, done: force ?? !sl.done } : sl
-      ),
+      checkIns: [...(s.checkIns ?? []), c],
     })),
-
-  // ---------- CHECK-INS ----------
-  addCheckIn: (c) => set((s) => ({ checkIns: [...s.checkIns, c] })),
 }));

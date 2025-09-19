@@ -6,11 +6,9 @@ import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
 
 // ---- FullCalendar（周视图）
-import FullCalendar from "@fullcalendar/react";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import "@fullcalendar/core/index.css";
-import "@fullcalendar/timegrid/index.css";
+import dynamic from "next/dynamic";
+const Calendar = dynamic(() => import("@/components/Calendar"), { ssr: false });
+
 
 import { useStore } from "@/state/store";
 import { exportWeekToICS } from "@/lib/ics";
@@ -21,19 +19,55 @@ import type { Task, Slot } from "@/types";
 export default function Home() {
   // ---- state from store
   const { tasks, plan, addTask, setPlan, toggleDone, clearAll } = useStore();
+  function onGenerate() {
+  const planData = generatePlan(tasks);
+  setPlan(planData);
+}
 
+async function onGenerateServer() {
+  setAiLoading(true);
+  try {
+    const resp = await fetch("/api/plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tasks }),
+    });
+    const data = await resp.json();
+    setPlan(data);
+  } finally {
+    setAiLoading(false);
+  }
+}
+// ---- convert weekSlots -> FullCalendar events ----
+const slotEvents = plan?.weekSlots?.map((slot: any, i: number) => ({
+  id: slot.id ?? `slot-${i}`,
+  title: slot.title || slot.subject || "Task",
+  start: slot.start,
+  end: slot.end,
+  extendedProps: { kind: "slot" },
+})) ?? [];
+
+const taskEvents = tasks
+  ?.filter((t: any) => !!t.due)
+  .map((t: any, i: number) => ({
+    id: t.id ?? `task-${i}`,
+    title: t.title || t.subject || "Task",
+    start: dayjs(t.due).toISOString(),
+    end: dayjs(t.due).add(t.minutes ?? 25, "minute").toISOString(),
+    extendedProps: { kind: "task" },
+  })) ?? [];
+
+// ---- 合并给 FullCalendar ----
+const fcEvents = [...slotEvents, ...taskEvents];
   // ---- local form states
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
   const [difficulty, setDifficulty] = useState<number>(3);
   const [minutes, setMinutes] = useState<number>(120);
   const [due, setDue] = useState<string>("");
-
+const [aiLoading, setAiLoading] = useState(false);
   // ---- chat box state
   const [chat, setChat] = useState<string>("");
-
-  // ---- server AI loading
-  const [aiLoading, setAiLoading] = useState(false);
 
   // derived counts
   const scheduledCount = useMemo(() => {
@@ -145,21 +179,11 @@ export default function Home() {
   // ---- Today top3 helper
   const todayTop3: Slot[] = (plan?.todayTop3 as Slot[]) || [];
 
-  // ---- FullCalendar events from plan
-  const fcEvents =
-    plan?.weekSlots?.map((s) => ({
-      id: s.id ?? crypto.randomUUID(),
-      title: `${s.subject} · ${s.title}`,
-      start: dayjs(s.start).toDate(),
-      end: dayjs(s.start).add(s.minutes, "minute").toDate(),
-    })) ?? [];
-
   return (
     <main className="mx-auto max-w-5xl px-6 py-8">
       {/* Header */}
       <header className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">NeuroPlan · Light Mode</h1>
           <p className="text-sm text-gray-500">Plan smarter · study calmer.</p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -201,28 +225,28 @@ clear`}
             </button>
 
             {/* 本地算法 */}
-            <button
-              onClick={onGenerate}
-              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              Generate Week Plan
-            </button>
+           <button
+  onClick={onGenerate}
+  className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+>
+  Generate Week Plan
+</button>
 
-            {/* 服务器端 AI 规划 */}
-            <button
-              onClick={callPlanner}
-              disabled={aiLoading}
-              className="rounded border px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
-            >
-              {aiLoading ? "AI Generating..." : "AI Generate (server)"}
-            </button>
+{/* 服务器端 AI 规划 */}
+<button
+  onClick={onGenerateServer}
+  disabled={aiLoading}
+  className="rounded border px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+>
+  {aiLoading ? "AI Generating..." : "AI Generate (server)"}
+</button>
 
-            <button
-              onClick={clearAll}
-              className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              Clear Tasks
-            </button>
+<button
+  onClick={clearAll}
+  className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+>
+  Clear Tasks
+</button>
           </div>
           <p className="text-xs text-gray-500">
             Tip: You can type multiple commands over time. Use{" "}
@@ -248,26 +272,31 @@ clear`}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
           />
-          <input
-            className="w-20 rounded border px-3 py-2 text-center"
-            placeholder="3"
-            value={difficulty}
-            onChange={(e) => setDifficulty(Number(e.target.value))}
-            type="number"
-            min={1}
-            max={5}
-            title="Difficulty (1–5)"
-          />
-          <input
-            className="w-24 rounded border px-3 py-2 text-center"
-            placeholder="120"
-            value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))}
-            type="number"
-            min={10}
-            step={5}
-            title="Estimated minutes"
-          />
+          <label className="flex flex-col text-sm">
+  Difficulty (1–5)
+  <input
+    className="w-20 rounded border px-3 py-2 text-center"
+    placeholder="e.g., 3"
+    value={difficulty}
+    onChange={(e) => setDifficulty(Number(e.target.value))}
+    type="number"
+    min={1}
+    max={5}
+  />
+</label>
+
+<label className="flex flex-col text-sm">
+  Estimated Minutes
+  <input
+    className="w-24 rounded border px-3 py-2 text-center"
+    placeholder="e.g., 120"
+    value={minutes}
+    onChange={(e) => setMinutes(Number(e.target.value))}
+    type="number"
+    min={10}
+    step={5}
+  />
+</label>
           <input
             className="w-[180px] rounded border px-3 py-2"
             type="date"
@@ -325,20 +354,7 @@ clear`}
 
         {/* FullCalendar 周视图 */}
         <div className="rounded border">
-          <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "timeGridWeek,timeGridDay",
-            }}
-            slotMinTime="07:00:00"
-            slotMaxTime="22:00:00"
-            allDaySlot={false}
-            height="auto"
-            events={fcEvents}
-          />
+         <Calendar events={fcEvents} />
         </div>
 
         {/* 备选：简易列表 */}
@@ -374,7 +390,7 @@ clear`}
       </section>
 
       <footer className="pb-10 text-xs text-gray-400">
-        MVP · Light Mode — EEG Plus coming soon
+      
       </footer>
     </main>
   );
