@@ -1,12 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 # Neuroplan 🧠📅
-EEG-based personalized learning planner built with Next.js and FullCalendar.  
+EEG-based personalized learning planner with two modes:
+- **Light Mode (Next.js)**: Smart study planner with task scheduling.
+- **EEG Mode (Streamlit)**: Brainwave-based focus tracking and analysis (Muse device).
+ 
 ---
 ## 🚀 Getting Started
 
-**1. Clone the repository**
+## Requirements
+- Node.js 18+ and npm  
+- Python 3.9+ (recommend 3.10/3.11) and pip
 
+## Light Mode (Next.js)
+**1. Clone the repository**
 ```bash
 git clone https://github.com/Agneschen99/Neuroplan.git
 cd Neuroplan
@@ -34,15 +41,36 @@ pnpm dev
 # or
 bun dev
 ```
-
 **Open** http://localhost:3000
  in your browser to see the app.
 If port 3000 is busy, the app will run on another port (e.g., 3001).
 
+**EEG Mode (Streamlit)**
+1. Enter the EEG app folder
+```bash
+cd eeg_app
+
+2. Create virtual environment (optional but recommended)
+```bash
+python3 -m venv venv
+source venv/bin/activate   # Mac/Linux
+venv\Scripts\activate      # Windows
+
+3. Install dependencies
+pip install -r requirements.txt
+
+4. Run the Streamlit app
+streamlit run streamlit_app.py
+
+Open http://localhost:8501
+ in your browser to view the EEG dashboard.
+
 **Project Structure**
 ├── public/  # Static files
 
-├── src/# Frontend code
+├── src/  # Light Mode (Next.js)
+
+├── eeg_app/  # EEG Mode (Streamlit)
 
 ├── .env.example # Example environment file
 
