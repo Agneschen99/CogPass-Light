@@ -13,6 +13,22 @@ EEG-based personalized learning planner with two modes:
 - Python 3.9+ (recommend 3.10/3.11) and pip
 
 ## Light Mode (Next.js)
+
+**Quickly complete the environment setup by script**
+reset-and-run-min.ps1
+
+reset-and-run-min.cmd
+
+Download these two files to the project root directory (at the same level as package.json).
+
+Double click reset and run min.cmd (or execute it in PowerShell .\reset-and-run-min.cmd).
+
+It will automatically: close residual nodes → clean up node_comodules/. next → npm install → npm run dev.
+
+Open in browser:** http://localhost:3000 **(or the Local/Network address displayed in the terminal)
+
+If the above methods do not work, try the following methods.
+
 **1. Clone the repository**
 ```bash
 git clone https://github.com/Agneschen99/Neuroplan.git
