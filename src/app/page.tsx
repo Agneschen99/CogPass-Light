@@ -4,6 +4,9 @@
 import type { FormEvent } from "react";
 import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
+import EEGStatus from '@/components/EEGStatus';
+// ...
+<EEGStatus />
 
 // ---- FullCalendar（周视图）
 import dynamic from "next/dynamic";
@@ -180,6 +183,16 @@ const [aiLoading, setAiLoading] = useState(false);
   const todayTop3: Slot[] = (plan?.todayTop3 as Slot[]) || [];
 
   return (
+  <div>
+    {/* EEG Mode */}
+    <div className="flex justify-end px-8 pt-4">
+      <a
+        href="/eeg"
+        className="rounded-md bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition"
+      >
+        🧠 Open EEG Mode
+      </a>
+    </div>
     <main className="mx-auto max-w-5xl px-6 py-8">
       {/* Header */}
       <header className="mb-6 flex items-center justify-between">
@@ -393,5 +406,7 @@ clear`}
       
       </footer>
     </main>
-  );
-}
+  </div>
+);
+} // ← 这是 export default function Home() 的结束大括号
+
