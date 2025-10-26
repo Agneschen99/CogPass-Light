@@ -3,31 +3,19 @@ import { create } from "zustand";
 import { nanoid } from "nanoid";
 import type { Task as AppTask, Slot as SlotType } from "@/types";
 
-// ====== Types ======
-// Re-export application types for compatibility
 export type Task = AppTask;
 export type WeekSlot = SlotType;
-export type Plan = {
-  todayTop3?: SlotType[];
-  weekSlots?: SlotType[];
-};
-
-export type CheckIn = {
-  at: string;           // ISO string
-  note?: string;
-};
+export type Plan = { todayTop3?: SlotType[]; weekSlots?: SlotType[] };
+export type CheckIn = { at: string; note?: string };
 
 type Store = {
-  // ----- state -----
   tasks: Task[];
   pomodoros: number;
   todayTop3: WeekSlot[];
   weekSlots: WeekSlot[];
   checkIns: CheckIn[];
-  plan?: Plan | null;
 
-  // ----- actions -----
-  addTask: (t: Omit<Task, "id">) => void;
+  addTask: (t: Partial<Task> & { title: string }) => void;
   removeTask: (id: string) => void;
   clearTasks: () => void;
 
@@ -37,7 +25,6 @@ type Store = {
   clearAll: () => void;
 };
 
-// ====== store ======
 export const useStore = create<Store>((set) => ({
   // ---- SAFE DEFAULTS ----
   tasks: [],
@@ -47,7 +34,6 @@ export const useStore = create<Store>((set) => ({
   checkIns: [],
 
   // ---- TASKS ----
-  // accept either a full Task (with id) or a Task-like object (no id)
   addTask: (t) =>
     set((s) => ({
       tasks: [
@@ -58,7 +44,7 @@ export const useStore = create<Store>((set) => ({
           subject: (t as any).subject,
           difficulty: (t as any).difficulty,
           due: (t as any).due,
-          minutes: (t as any).minutes,
+          minutes: (t as any).minutes ?? (t as any).estimatedMinutes,
         },
       ],
     })),
@@ -68,7 +54,15 @@ export const useStore = create<Store>((set) => ({
 
   clearTasks: () => set(() => ({ tasks: [] })),
 
-  // ---- extra helpers ----
+  setPlan: (plan) =>
+    set(() => ({
+      todayTop3: plan.todayTop3 ?? [],
+      weekSlots: plan.weekSlots ?? [],
+    })),
+
+  addCheckIn: (c) =>
+    set((s) => ({ checkIns: [...(s.checkIns ?? []), c] })),
+
   toggleDone: (id?: string | number) =>
     set((s) => {
       if (id === undefined) return {} as any;
@@ -87,17 +81,4 @@ export const useStore = create<Store>((set) => ({
 
   clearAll: () =>
     set(() => ({ tasks: [], todayTop3: [], weekSlots: [], plan: { todayTop3: [], weekSlots: [] } })),
-
-  // ---- PLAN ----
-  setPlan: (plan) =>
-    set(() => ({
-      todayTop3: plan.todayTop3 ?? [],
-      weekSlots: plan.weekSlots ?? [],
-    })),
-
-  // ---- CHECKINS ----
-  addCheckIn: (c) =>
-    set((s) => ({
-      checkIns: [...(s.checkIns ?? []), c],
-    })),
 }));

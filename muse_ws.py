@@ -79,13 +79,22 @@ async def lsl_stream(ws: WebSocketServerProtocol):
         return
 
     await ws.send(build_packet({"mode": "lsl", "status": "resolving LSL stream..."}))
-    streams = resolve_stream("type", "EEG", timeout=5)
-    if not streams:
-        await ws.send(build_packet({"mode": "lsl", "error": "no EEG LSL stream found"}))
-        return
-
-    inlet = StreamInlet(streams[0], max_buflen=5)
-    await ws.send(build_packet({"mode": "lsl", "status": "connected"}))
+    # Prefer the centralized helper if available
+    try:
+        from app.eeg.streamlit_app import _lsl_connect_or_error
+        inlet, err = _lsl_connect_or_error('EEG', timeout=5.0)
+        if err is not None or inlet is None:
+            await ws.send(build_packet({"mode": "lsl", "error": err or "no EEG LSL stream found"}))
+            return
+        await ws.send(build_packet({"mode": "lsl", "status": "connected"}))
+    except Exception:
+        # fallback to local resolve_stream approach
+        streams = resolve_stream("type", "EEG", timeout=5)
+        if not streams:
+            await ws.send(build_packet({"mode": "lsl", "error": "no EEG LSL stream found"}))
+            return
+        inlet = StreamInlet(streams[0], max_buflen=5)
+        await ws.send(build_packet({"mode": "lsl", "status": "connected"}))
 
     # naive focus index from absolute amplitude ratio on the fly
     import collections

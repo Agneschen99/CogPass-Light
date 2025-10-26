@@ -4,9 +4,6 @@
 import type { FormEvent } from "react";
 import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import EEGStatus from '@/components/EEGStatus';
-// ...
-<EEGStatus />
 
 // ---- FullCalendar（周视图）
 import dynamic from "next/dynamic";
@@ -18,31 +15,26 @@ import { exportWeekToICS } from "@/lib/ics";
 import { generatePlan } from "@/lib/planner";
 import { parseChatInput } from "@/lib/nlp";
 import type { Task, Slot } from "@/types";
-// import type { Slot } from "@/types"; // Removed because Slot is not exported
 
 export default function Home() {
   // ---- state from store
   const { tasks, plan, addTask, setPlan, toggleDone, clearAll } = useStore();
-  // single local generate handler (local algorithm)
-  function onGenerateLocal() {
-    const planData = generatePlan(tasks);
-    setPlan(planData as any);
-  }
+  // local generate is handled by onGenerateLocal (kept in src/app/page.tsx)
 
-  async function onGenerateServer() {
-    setAiLoading(true);
-    try {
-      const resp = await fetch("/api/plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tasks }),
-      });
-      const data = await resp.json();
-      setPlan(data as any);
-    } finally {
-      setAiLoading(false);
-    }
+async function onGenerateServer() {
+  setAiLoading(true);
+  try {
+    const resp = await fetch("/api/plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tasks }),
+    });
+    const data = await resp.json();
+    setPlan(data);
+  } finally {
+    setAiLoading(false);
   }
+}
 // ---- convert weekSlots -> FullCalendar events ----
 const slotEvents = plan?.weekSlots?.map((slot: any, i: number) => ({
   id: slot.id ?? `slot-${i}`,
@@ -136,7 +128,10 @@ const [aiLoading, setAiLoading] = useState(false);
     setMinutes(120);
   }
 
-  // local generate is handled by onGenerateLocal
+  function onGenerate() {
+    // 本地算法版本
+    setPlan(generatePlan(useStore.getState().tasks, 5));
+  }
 
   function onExportICS() {
     const ics = exportWeekToICS(plan?.weekSlots || []);
@@ -182,16 +177,6 @@ const [aiLoading, setAiLoading] = useState(false);
   const todayTop3: Slot[] = (plan?.todayTop3 as Slot[]) || [];
 
   return (
-  <div>
-    {/* EEG Mode */}
-    <div className="flex justify-end px-8 pt-4">
-      <a
-        href="/eeg"
-        className="rounded-md bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition"
-      >
-        🧠 Open EEG Mode
-      </a>
-    </div>
     <main className="mx-auto max-w-5xl px-6 py-8">
       {/* Header */}
       <header className="mb-6 flex items-center justify-between">
@@ -238,7 +223,7 @@ clear`}
 
             {/* 本地算法 */}
            <button
-  onClick={onGenerateLocal}
+  onClick={onGenerate}
   className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
 >
   Generate Week Plan
@@ -405,7 +390,5 @@ clear`}
       
       </footer>
     </main>
-  </div>
-);
-} // ← 这是 export default function Home() 的结束大括号
-
+  );
+}

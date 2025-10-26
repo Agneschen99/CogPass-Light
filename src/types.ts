@@ -4,7 +4,9 @@ export type Task = {
   subject: string;           // e.g., Math / Chinese / History
   title: string;             // e.g., Chapter 3 Review
   difficulty: number;        // 1–5 (priority or hardness)
-  estimatedMinutes: number;  // total minutes required
+  // total minutes required (compatibility: some modules use `estimatedMinutes`, others use `minutes`)
+  estimatedMinutes?: number;
+  minutes?: number;
   due: string;               // YYYY-MM-DD
 };
 
@@ -17,6 +19,17 @@ export type Scheduled = {
   start: Date;               // actual start time
   minutes: number;           // usually 25
   done: boolean;             // marked complete
+};
+
+// Legacy / UI-friendly slot used across planner and UI (ISO strings, optional done)
+export type Slot = {
+  id?: string | number;
+  title?: string;
+  subject?: string;
+  start: string; // ISO string
+  end?: string; // ISO string
+  minutes?: number;
+  done?: boolean;
 };
 
 // Plan for a single day
