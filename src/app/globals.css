@@ -1,12 +1,11 @@
 /* src/app/globals.css */
 
 /* Tailwind (keep this at the top) */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* FullCalendar v6 CSS (must come before any rules) */
-@import "~@fullcalendar/core/main.css";
-@import "~@fullcalendar/daygrid/main.css";
-@import "~@fullcalendar/timegrid/main.css";
+
 /* ===== your theme / base styles ===== */
 :root {
   --background: #ffffff;
