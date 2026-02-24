@@ -1,6 +1,6 @@
 # Small runtime tests for ensemble + DP behavior
 import numpy as np
-from app.eeg import algorithms as algo
+from app.eeg import algorithms_backup as algo
 try:
     from app.eeg.adp.adaptive_dp import AdaptiveDPController
 except ModuleNotFoundError:

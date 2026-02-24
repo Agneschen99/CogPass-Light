@@ -4,10 +4,9 @@
 @import "tailwindcss";
 
 /* FullCalendar v6 CSS (must come before any rules) */
-@import "@fullcalendar/core/index.css";
-@import "@fullcalendar/daygrid/index.css";
-@import "@fullcalendar/timegrid/index.css";
-
+@import "~@fullcalendar/core/main.css";
+@import "~@fullcalendar/daygrid/main.css";
+@import "~@fullcalendar/timegrid/main.css";
 /* ===== your theme / base styles ===== */
 :root {
   --background: #ffffff;

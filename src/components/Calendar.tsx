@@ -11,7 +11,7 @@ type CalendarProps = {
 
 export default function Calendar({ events = [] }: CalendarProps) {
   return (
-    <div className="p-4">
+    <div className="rounded-xl border bg-white p-4 shadow-sm">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"

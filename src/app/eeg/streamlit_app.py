@@ -86,7 +86,7 @@ import plotly.graph_objects as go
 from app.eeg.eeg_mem_pipeline import load_model_bundle, online_predict
 # Optional: high-level algorithm helpers and training convenience functions.
 # Import guarded so the UI still loads if train_and_save.py isn't present.
-from app.eeg import algorithms as algo
+from app.eeg import algorithms_backup as algo
 try:
     from app.eeg.train_and_save import train_linear_svm_bayes, train_mlp_bayes, save_bundle
 except Exception:
@@ -2499,7 +2499,7 @@ def main():
         render_model_info_panel_v2(model_path=f"{MODEL_PATH}.model", meta_path=f"{MODEL_PATH}.json")
 
     # ==== Auto-DP (minimal) ====
-    from app.eeg.algorithms import dp_confidence_weighted_predict
+    from app.eeg.algorithms_backup import dp_confidence_weighted_predict
 
     def _get_dp_from_session() -> 'AdaptiveDPController':
         # Return the session DP controller, creating from persisted settings if needed

@@ -32,7 +32,7 @@ except Exception:
     LSL_AVAILABLE = False
 
 try:
-    from app.eeg import algorithms as algo
+    from app.eeg import algorithms_backup as algo
 except Exception:  # pragma: no cover - optional dependency
     algo = None  # type: ignore
 
@@ -280,3 +280,7 @@ def render_one_button_app(call_set_page_config: bool = False) -> None:
                 st.markdown("**🧷 记忆力就绪（适合背诵/复盘）：** " + "； ".join(fmt_interval(x) for x in mem_best))
             else:
                 st.markdown("**记忆力就绪**：未检测到显著峰值，可在注意力高峰结束后安排 10–15 分钟复盘。")
+
+
+if __name__ == "__main__":
+    render_one_button_app(call_set_page_config=True)

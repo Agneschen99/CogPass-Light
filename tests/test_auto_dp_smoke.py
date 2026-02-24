@@ -7,7 +7,7 @@ if ROOT_SRC not in sys.path:
     sys.path.insert(0, ROOT_SRC)
 
 from app.eeg.streamlit_app import apply_auto_dp_and_render_module
-from app.eeg import algorithms as algo
+from app.eeg import algorithms_backup as algo
 
 
 class DummyEstimator:

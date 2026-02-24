@@ -16,7 +16,7 @@ export default function HomePage() {
       <div className="grid w-full max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         {/* Light Mode Card - 点击去往你刚才做好的页面 */}
         <Link
-          href="/light-mode"
+          href="/light"
           className="group block transform rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
         >
           <div className="mb-4 text-4xl">☀️</div>
