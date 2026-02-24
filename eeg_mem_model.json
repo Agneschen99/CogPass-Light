@@ -1,7 +1,0 @@
-{
-  "threshold": 0.44999999999999996,
-  "meta": {
-    "pca_mode": "keep_components",
-    "pca_param": 20
-  }
-}
