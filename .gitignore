@@ -33,3 +33,5 @@ pnpm-debug.log*
 
 # misc
 *.tsbuildinfo
+venv/
+__pycache__/
