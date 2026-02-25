@@ -43,5 +43,10 @@ EEG Mode (future) will integrate Muse signals.
 ## ⚙️ Getting Started
 
 ```bash
+git clone https://github.com/Agneschen99/CogPass-Light.git
+cd CogPass-Light
 npm install
 npm run dev
+
+Open:
+http://localhost:3000
