@@ -50,3 +50,14 @@ npm run dev
 
 Open:
 http://localhost:3000
+
+
+---
+
+```md
+## 🧑‍💻 Development
+
+```bash
+git add .
+git commit -m "update"
+git push
